@@ -10,6 +10,19 @@ require 'json'
 # | |_| | |_| | | | |_| |  __/\__ \
 #  \___/ \__|_|_|_|\__|_|\___||___/
 
+def print_header(prompt)
+  header = [
+    ' ____ ___ ____  ____  _     __  __    _    _   _',
+    '| __ )_ _| __ )| __ )| |   |  \/  |  / \  | \ | |',
+    '|  _ \| ||  _ \|  _ \| |   | |\/| | / _ \ |  \| |',
+    '| |_) | || |_) | |_) | |___| |  | |/ ___ \| |\  |',
+    '|____/___|____/|____/|_____|_|  |_/_/   \_\_| \_|'
+  ]
+
+  header.each { |i| prompt.warn(i) }
+  puts('')
+end
+
 def add_date
   prompt = TTY::Prompt.new
   months = %w[
@@ -30,15 +43,15 @@ def add_doi
   end
 end
 
-def add_authors
+def add_author
   prompt = TTY::Prompt.new
   count_query = 'How many authors are involved? (0 for organisational)'
   count = prompt.ask(count_query, default: 1, convert: :integer) { |q| q.in('0-30') }
 
-  if count.zero?
+  if count == 0
     org_query = "Enter the organisation's name:"
     organisation = prompt.ask(org_query, default: 'Place Holder inc.')
-    [0, organisation]
+    [organisation, 0]
   end
 
   authors = []
@@ -52,11 +65,32 @@ def add_authors
   authors
 end
 
+def print_author(authors)
+  print('by ')
+  if authors[1] == 0
+    print(authors[0])
+    return nil
+  end
+
+  count = authors.length
+  count.times do |i|
+    if i == count - 1
+      print(authors[i])
+    else
+      print("#{authors[i]}, ")
+    end
+  end
+
+  puts('')
+end
+
 def read_author(file)
   count = file.gets.to_i
-  if count.zero?
+  if count == 0
+    p('Author is an organisation')
     organisation = file.gets.chomp
-    [0, organisation]
+    p(organisation)
+    [organisation, 0]
   end
 
   authors = []
@@ -67,27 +101,10 @@ def read_author(file)
   authors
 end
 
-def print_author(authors)
-  if (authors[0]) == 0
-    puts(authors[1])
-    return nil
-  end
-
-  count = authors.length
-  count.times do |i|
-    if i == count - 1
-      puts(authors[i])
-    else
-      print("#{authors[i]}, ")
-    end
-  end
-end
-
 def write_author(file, authors)
-  if authors[0] == 0
-    p("export organisation")
+  if authors[1] == 0
     file.puts(0)
-    file.puts(authors[1])
+    file.puts(authors[0])
     return nil
   end
 
@@ -105,47 +122,47 @@ end
 
 # Book source: Author, Title, Publication Year, Publisher
 class Book
-	attr_accessor :author, :title, :year, :publisher
+  attr_accessor :author, :title, :year, :publisher
 
-	def initialize(author, title, year, publisher)
-		@author = author
-		@title = title
-		@year = year
-		@publisher = publisher
-	end
+  def initialize(author, title, year, publisher)
+    @author = author
+    @title = title
+    @year = year
+    @publisher = publisher
+  end
 
-	def write(file)
-		write_author(file, @author)
-		file.puts(@title)
-		file.puts(@year)
-		file.puts(@publisher)
-	end
+  def write(file)
+    write_author(file, @author)
+    file.puts(@title)
+    file.puts(@year)
+    file.puts(@publisher)
+  end
 end
 
 def read_book(file)
-	author = read_author(file)
-	title = file.gets.chomp
-	year = file.gets.to_i
-	publisher = file.gets.chomp
+  author = read_author(file)
+  title = file.gets.chomp
+  year = file.gets.to_i
+  publisher = file.gets.chomp
 
-	Book.new(author, title, year, publisher)
+  Book.new(author, title, year, publisher)
 end
 
 def add_book
-	prompt = TTY::Prompt.new
+  prompt = TTY::Prompt.new
 
-	author = add_authors
-	title = prompt.ask('Title:', default: 'Nineteen Eighty-Four')
-	year = prompt.ask('Publication year:', default: 1949, convert: :integer)
-	publisher = prompt.ask('Publisher:', default: 'Secker & Warburg')
+  author = add_author
+  title = prompt.ask('Title:', default: 'Nineteen Eighty-Four')
+  year = prompt.ask('Publication year:', default: 1949, convert: :integer)
+  publisher = prompt.ask('Publisher:', default: 'Secker & Warburg')
 
-	Book.new(author, title, year, publisher)
+  Book.new(author, title, year, publisher)
 end
 
 def print_book(book)
-	print("#{book.title} (#{book.year}) by ")
-	print_author(book.author)
-	puts("Published by #{book.publisher}")
+  puts("#{book.title} (#{book.year})")
+  print_author(book.author)
+  puts("Published by #{book.publisher}")
 end
 
 #   ___       _   _      _
@@ -158,71 +175,70 @@ end
 # Journal Article source: Author, Title, Publication year, Journal
 # Volume, Issue, Page range, Digital Object Identifier
 class Article
-	attr_accessor :author, :title, :year, :journal, :volume, :issue, :page, :doi
+  attr_accessor :author, :title, :year, :journal, :volume, :issue, :page, :doi
 
-	def initialize(author, title, year, journal, volume, issue, page, doi)
-		@author = author
-		@title = title
-		@year = year
-		@journal = journal
-		@volume = volume
-		@issue = issue
-		@page = page
-		@doi = doi
-	end
+  def initialize(author, title, year, journal, volume, issue, page, doi)
+    @author = author
+    @title = title
+    @year = year
+    @journal = journal
+    @volume = volume
+    @issue = issue
+    @page = page
+    @doi = doi
+  end
 
-	def write(file)
-		write_author(file, @author)
-		file.puts(@title)
-		file.puts(@year)
-		file.puts(@journal)
-		file.puts(@volume)
-		file.puts(@issue)
-		file.puts(@page)
-		file.puts(@doi)
-	end
+  def write(file)
+    write_author(file, @author)
+    file.puts(@title)
+    file.puts(@year)
+    file.puts(@journal)
+    file.puts(@volume)
+    file.puts(@issue)
+    file.puts(@page)
+    file.puts(@doi)
+  end
 end
 
 def read_article(file)
-	author = read_author(file)
-	title = file.gets.chomp
-	year = file.gets.to_i
-	journal = file.gets.chomp
-	volume = file.gets.to_i
-	issue = file.gets.to_i
-	page = file.gets.chomp
-	doi = file.gets.chomp
+  author = read_author(file)
+  title = file.gets.chomp
+  year = file.gets.to_i
+  journal = file.gets.chomp
+  volume = file.gets.to_i
+  issue = file.gets.to_i
+  page = file.gets.chomp
+  doi = file.gets.chomp
 
-	Article.new(author, title, year, journal, volume, issue, page, doi)
+  Article.new(author, title, year, journal, volume, issue, page, doi)
 end
 
 def add_article
-	prompt = TTY::Prompt.new
-	author = add_authors
-	title = prompt.ask('Title:', default: 'Lorem Ipsum: Dolor Sit Amet')
-	year = prompt.ask('Publish year:', default: '2023', convert: :integer) do |q|
-		q.validate(/\d{4,}/)
-	end
-	journal = prompt.ask('Name of the Journal:', default: 'Journal of Marine Biology')
-	volume = prompt.ask('Volume number:', convert: :integer)
-	issue = prompt.ask('Issue number:', convert: :integer)
-	page_range = prompt.ask('Page range:', default: '000-000') do |q|
-		q.validate(/\d{1,}-\d{1,}/)
-	end
-	doi = add_doi
+  prompt = TTY::Prompt.new
+  author = add_author
+  title = prompt.ask('Title:', default: 'Lorem Ipsum: Dolor Sit Amet')
+  year = prompt.ask('Publish year:', default: '2023', convert: :integer) do |q|
+    q.validate(/\d{4,}/)
+  end
+  journal = prompt.ask('Name of the Journal:', default: 'Journal of Marine Biology')
+  volume = prompt.ask('Volume number:', convert: :integer)
+  issue = prompt.ask('Issue number:', convert: :integer)
+  page_range = prompt.ask('Page range:', default: '000-000') do |q|
+    q.validate(/\d{1,}-\d{1,}/)
+  end
+  doi = add_doi
 
-	Article.new author, title, year, journal, volume, issue, page_range, doi
+  Article.new author, title, year, journal, volume, issue, page_range, doi
 end
 
 def print_article(article)
-	puts(article.title)
-	print('by ')
-	print_author(article.author)
-	puts("Published by #{article.journal}")
-	print("Volume #{article.volume}") if article.volume
-	puts(", Issue #{article.issue}") if article.issue
-	puts("Page #{article.page}") if article.page
-	puts("https://doi.org/#{article.doi}") if article.doi
+  puts(article.title)
+  print_author(article.author)
+  puts("Published by #{article.journal}")
+  print("Volume #{article.volume}") if article.volume
+  puts(", Issue #{article.issue}") if article.issue
+  puts("Page #{article.page}") if article.page
+  puts("https://doi.org/#{article.doi}") if article.doi
 end
 
 #  _    _      _
@@ -236,53 +252,55 @@ end
 
 # Webpage Document source: Author, Title, Publication date, Website name, URL
 class Webpage
-	attr_accessor :author, :title, :date, :website, :url
+  attr_accessor :author, :title, :date, :website, :url
 
-	def initialize(author, title, date, website, url)
-		@author = author
-		@title = title
-		@date = date
-		@website = website
-		@url = url
-	end
+  def initialize(author, title, date, website, url)
+    @author = author
+    @title = title
+    @date = date
+    @website = website
+    @url = url
+  end
 
-	def write(file)
-		write_author(file, @author)
-		file.puts(@title)
-		file.puts(@date)
-		file.puts(@website)
-		file.puts(@url)
-	end
+  def write(file)
+    write_author(file, @author)
+    file.puts(@title)
+    file.puts(@date)
+    file.puts(@website)
+    file.puts(@url)
+  end
 end
 
 def read_webpage(file)
-	author = read_author(file)
-	title = file.gets.chomp
-	date = file.gets.chomp
-	website = file.gets.chomp
-	url = file.gets.chomp
+  author = read_author(file)
+  title = file.gets.chomp
+  year = file.gets.to_i
+  month = file.gets.chomp
+  day = file.gets.to_i
+  website = file.gets.chomp
+  url = file.gets.chomp
 
-	Webpage.new(author, title, date, website, url)
+  Webpage.new(author, title, [year, month, day], website, url)
 end
 
 def add_webpage
-	prompt = TTY::Prompt.new
-	author = add_authors
-	title = prompt.ask('Enter webpage title:', default: 'Lorem ipsum - Dolor Sit Amet')
-	date = add_date
-	website = prompt.ask('Enter website name:', default: 'Place Holder inc.')
-	url = prompt.ask('Enter URL:') do |q|
-		q.validate(%r{(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])})
-	end
+  prompt = TTY::Prompt.new
+  author = add_author
+  title = prompt.ask('Enter webpage title:', default: 'Lorem ipsum - Dolor Sit Amet')
+  date = add_date
+  website = prompt.ask('Enter website name:', default: 'Place Holder inc.')
+  url = prompt.ask('Enter URL:') do |q|
+    q.validate(%r{(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])})
+  end
 
-	Webpage.new(author, title, date, website, url)
+  Webpage.new(author, title, date, website, url)
 end
 
 def print_webpage(webpage)
-	print(webpage.title)
-	puts("by #{webpage.author}")
-	puts("Uploaded on #{webpage.website}, #{webpage.date}")
-	puts(webpage.url)
+  puts(webpage.title)
+  print_author(webpage.author)
+  puts("Uploaded on #{webpage.website}, on #{webpage.date}")
+  puts(webpage.url)
 end
 
 # ______ _ _     _ _                             _
@@ -370,14 +388,6 @@ def main
   bibfile_name = 'bibfile.txt' # Default file name
   bibarray = [] # Array of Bibliography items
 
-  header = [
-    ' ____ ___ ____  ____  _     __  __    _    _   _',
-    '| __ )_ _| __ )| __ )| |   |  \/  |  / \  | \ | |',
-    '|  _ \| ||  _ \|  _ \| |   | |\/| | / _ \ |  \| |',
-    '| |_) | || |_) | |_) | |___| |  | |/ ___ \| |\  |',
-    '|____/___|____/|____/|_____|_|  |_/_/   \_\_| \_|',
-  ]
-
   choices = [
     'Open file',
     'Save file',
@@ -387,8 +397,7 @@ def main
   ]
 
   prompt = TTY::Prompt.new
-  header.each { |i| prompt.warn(i) }
-  puts('')
+  print_header(prompt)
 
   done = false
   loop do

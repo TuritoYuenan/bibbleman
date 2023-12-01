@@ -1,0 +1,38 @@
+4
+Article
+3
+Ibrahim Khan
+Khalid Saeed
+Idrees Khan
+Nanoparticles: Properties, applications and toxicities
+2019
+Arabian Journal of Chemistry
+12
+7
+908-931
+10.1016/j.arabjc.2017.05.011
+Article
+1
+Paul A.S. Breslin
+An Evolutionary Perspective on Food and Human Taste
+2013
+Current Biology
+23
+9
+409-418
+10.1016/j.cub.2013.04.010
+Book
+1
+George Orwell
+Nineteen Eighty-Four
+1949
+Secker & Warburg
+Webpage
+0
+Apache
+Apache ECharts
+2021
+January
+11
+Github
+https://github.com/apache/echarts
