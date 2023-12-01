@@ -12,11 +12,11 @@ require 'json'
 
 def print_header(prompt)
   header = [
-    ' ____ ___ ____  ____  _     __  __    _    _   _',
-    '| __ )_ _| __ )| __ )| |   |  \/  |  / \  | \ | |',
-    '|  _ \| ||  _ \|  _ \| |   | |\/| | / _ \ |  \| |',
-    '| |_) | || |_) | |_) | |___| |  | |/ ___ \| |\  |',
-    '|____/___|____/|____/|_____|_|  |_/_/   \_\_| \_|'
+    ' ____ ___ ____  __  __    _    _   _',
+    '| __ )_ _| __ )|  \/  |  / \  | \ | |',
+    '|  _ \| ||  _ \| |\/| | / _ \ |  \| |',
+    '| |_) | || |_) | |  | |/ ___ \| |\  |',
+    '|____/___|____/|_|  |_/_/   \_\_| \_|'
   ]
 
   header.each { |i| prompt.warn(i) }
@@ -69,6 +69,7 @@ def print_author(authors)
   print('by ')
   if authors[1] == 0
     print(authors[0])
+    puts('')
     return nil
   end
 
@@ -80,17 +81,14 @@ def print_author(authors)
       print("#{authors[i]}, ")
     end
   end
-
   puts('')
 end
 
 def read_author(file)
   count = file.gets.to_i
   if count == 0
-    p('Author is an organisation')
     organisation = file.gets.chomp
-    p(organisation)
-    [organisation, 0]
+    return [organisation, 0]
   end
 
   authors = []
@@ -233,6 +231,7 @@ end
 
 def print_article(article)
   puts(article.title)
+  print("In #{article.year} ")
   print_author(article.author)
   puts("Published by #{article.journal}")
   print("Volume #{article.volume}") if article.volume
@@ -297,10 +296,11 @@ def add_webpage
 end
 
 def print_webpage(webpage)
+  year, month, day = webpage.date
   puts(webpage.title)
+  print("Uploaded on #{day} #{month} #{year} ")
   print_author(webpage.author)
-  puts("Uploaded on #{webpage.website}, on #{webpage.date}")
-  puts(webpage.url)
+  puts("Published on #{webpage.website}: #{webpage.url}")
 end
 
 # ______ _ _     _ _                             _
@@ -345,7 +345,6 @@ end
 def read_bibliography(bibfile)
   bibliography = []
   count = bibfile.gets.to_i
-  p(count)
 
   count.times do
     type = bibfile.gets.chomp
@@ -384,7 +383,7 @@ end
 #                                         __/ |
 #                                        |___/
 
-def main
+def main_program
   bibfile_name = 'bibfile.txt' # Default file name
   bibarray = [] # Array of Bibliography items
 
@@ -434,4 +433,4 @@ def main
   end
 end
 
-main
+main_program

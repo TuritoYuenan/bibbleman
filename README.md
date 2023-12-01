@@ -1,8 +1,8 @@
-# Bibblman - Bibliography Manager
+# Bibman - Bibliography Manager
 
-Bibblman is a program that manages your bibliography. Users of Bibblman can import an existing bibliography file, then add either books, journal articles or webpage documents to their bibliography.
+Bibman is a program that manages your bibliography. Users can import an existing bibliography file, then add either books, journal articles or webpage documents to their bibliography, print out the list of items and export to file.
 
-## Types of Bibliography item
+## Types of Bibliography items
 
 - Book: author, date, title, publisher
 - Article: author, date, title, journal, volume, issue, page, doi
