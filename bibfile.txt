@@ -1,4 +1,4 @@
-4
+6
 Article
 3
 Ibrahim Khan
@@ -36,3 +36,18 @@ January
 11
 Github
 https://github.com/apache/echarts
+Webpage
+1
+Piotr Murach
+TTY::Prompt
+2019
+May
+31
+Github
+https://github.com/piotrmurach/tty-prompt
+Book
+1
+Ursula K. Le Guin
+Always Coming Home
+1985
+Harper & Row
