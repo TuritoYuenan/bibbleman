@@ -50,7 +50,7 @@ def add_author
   if count == 0
     org_query = "Enter the organisation's name:"
     organisation = prompt.ask(org_query, default: 'Place Holder inc.')
-    [organisation, 0]
+    return [organisation, 0]
   end
 
   authors = []
