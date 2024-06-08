@@ -1,3 +1,5 @@
+![Project Banner](Bibman.png)
+
 # Bibman - Bibliography Manager
 
 Bibman is a program that manages your bibliography. Users can import an existing bibliography file, add either books, journal articles or webpage documents to their bibliography, then print out the list of these items and export to file.
